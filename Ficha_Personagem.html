@@ -1,0 +1,1268 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Personagem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --jade-dark: #0a1810;
+            --jade-deep: #1a3020;
+            --jade-medium: #2d5940;
+            --jade-light: #4a8c63;
+            --jade-bright: #6bc98f;
+            --gold-accent: #d4af37;
+            --gold-light: #f4d47f;
+            --paper: #f5f0e8;
+            --ink: #2a2520;
+            --red-seal: #c41e3a;
+            --shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background: linear-gradient(135deg, var(--jade-dark) 0%, var(--jade-deep) 50%, #0f2018 100%);
+            background-attachment: fixed;
+            color: var(--paper);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(74, 140, 99, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .character-selector {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .character-selector h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: var(--gold-accent);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+
+        .character-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .character-btn {
+            background: linear-gradient(135deg, var(--jade-medium), var(--jade-light));
+            border: 2px solid var(--gold-accent);
+            color: var(--paper);
+            padding: 0.8rem 1.5rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(244, 212, 127, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .character-btn:hover::before {
+            left: 100%;
+        }
+
+        .character-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
+            border-color: var(--gold-light);
+        }
+
+        .character-btn.active {
+            background: linear-gradient(135deg, var(--gold-accent), var(--gold-light));
+            color: var(--jade-dark);
+            font-weight: 600;
+        }
+
+        .character-sheet {
+            background: linear-gradient(to bottom, rgba(42, 37, 32, 0.95), rgba(29, 48, 32, 0.95));
+            border: 3px solid var(--gold-accent);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 10px 50px var(--shadow), inset 0 1px 0 rgba(244, 212, 127, 0.2);
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+        }
+
+        .character-sheet::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 6px;
+            pointer-events: none;
+        }
+
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gold-accent);
+            position: relative;
+        }
+
+        .sheet-header::after {
+            content: '◆';
+            position: absolute;
+            bottom: -0.7rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--jade-deep);
+            color: var(--gold-accent);
+            padding: 0 1rem;
+            font-size: 1.2rem;
+        }
+
+        .character-name {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gold-light);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .edit-btn, .save-btn, .cancel-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--gold-accent);
+            background: transparent;
+            color: var(--gold-accent);
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .edit-btn:hover, .save-btn:hover {
+            background: var(--gold-accent);
+            color: var(--jade-dark);
+            transform: scale(1.05);
+        }
+
+        .cancel-btn {
+            background: var(--red-seal);
+            border-color: var(--red-seal);
+            color: white;
+            margin-left: 0.5rem;
+        }
+
+        .cancel-btn:hover {
+            background: #a0182e;
+            border-color: #a0182e;
+        }
+
+        .character-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-section {
+            background: rgba(26, 48, 32, 0.5);
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--jade-light);
+        }
+
+        .info-section h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-accent);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            letter-spacing: 0.05em;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        .info-label {
+            color: var(--jade-bright);
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: var(--paper);
+        }
+
+        .attributes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .attribute-card {
+            background: linear-gradient(135deg, rgba(45, 89, 64, 0.6), rgba(26, 48, 32, 0.8));
+            border: 2px solid var(--jade-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .attribute-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(107, 201, 143, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .attribute-card:hover::before {
+            opacity: 1;
+        }
+
+        .attribute-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold-accent);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+
+        .attribute-card:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .attribute-name {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .attribute-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--jade-bright);
+            margin-bottom: 0.3rem;
+        }
+
+        .attribute-modifier {
+            color: var(--gold-accent);
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .abilities-section, .equipment-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold-accent);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--jade-light);
+            letter-spacing: 0.05em;
+        }
+
+        .ability-item, .equipment-item {
+            background: rgba(26, 48, 32, 0.5);
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid var(--jade-light);
+            border-radius: 4px;
+        }
+
+        .ability-name, .equipment-name {
+            color: var(--gold-light);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ability-description, .equipment-description {
+            color: var(--paper);
+            line-height: 1.6;
+        }
+
+        .dice-log {
+            background: rgba(10, 24, 16, 0.8);
+            border: 2px solid var(--jade-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .dice-log h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-accent);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .dice-entry {
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            animation: slideInRight 0.4s ease-out;
+            border-left: 4px solid var(--jade-bright);
+            background: rgba(45, 89, 64, 0.3);
+        }
+
+        .dice-entry.critical {
+            border-left-color: var(--gold-accent);
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .dice-entry.fumble {
+            border-left-color: var(--red-seal);
+            background: rgba(196, 30, 58, 0.2);
+        }
+
+        .dice-result {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--jade-bright);
+        }
+
+        .dice-entry.critical .dice-result {
+            color: var(--gold-accent);
+        }
+
+        .dice-entry.fumble .dice-result {
+            color: var(--red-seal);
+        }
+
+        .dice-details {
+            color: var(--paper);
+            opacity: 0.8;
+            margin-top: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .clear-log-btn {
+            background: var(--red-seal);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .clear-log-btn:hover {
+            background: #a0182e;
+            transform: scale(1.05);
+        }
+
+        input[type="text"], input[type="number"], textarea {
+            background: rgba(10, 24, 16, 0.8);
+            border: 2px solid var(--jade-light);
+            color: var(--paper);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .defect-box {
+            background: rgba(196, 30, 58, 0.2);
+            border: 2px solid var(--red-seal);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .defect-box h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--red-seal);
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        .defect-text {
+            color: var(--paper);
+            line-height: 1.6;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .dice-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .dice-log::-webkit-scrollbar-track {
+            background: rgba(10, 24, 16, 0.5);
+            border-radius: 4px;
+        }
+
+        .dice-log::-webkit-scrollbar-thumb {
+            background: var(--jade-light);
+            border-radius: 4px;
+        }
+
+        .dice-log::-webkit-scrollbar-thumb:hover {
+            background: var(--jade-bright);
+        }
+
+        @media (max-width: 768px) {
+            .character-info {
+                grid-template-columns: 1fr;
+            }
+
+            .attributes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .character-selector h1 {
+                font-size: 1.8rem;
+            }
+
+            .character-name {
+                font-size: 1.5rem;
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--jade-dark);
+            color: var(--paper);
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 1px solid var(--gold-accent);
+            font-size: 0.85rem;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .dice-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, var(--jade-dark), var(--jade-deep));
+            border: 3px solid var(--gold-accent);
+            border-radius: 12px;
+            padding: 2rem 3rem;
+            z-index: 9999;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: popupBounce 0.5s ease-out forwards;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .dice-popup.critical {
+            border-color: var(--gold-light);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.6), 0 0 40px rgba(212, 175, 55, 0.4);
+        }
+
+        .dice-popup.fumble {
+            border-color: var(--red-seal);
+            box-shadow: 0 20px 60px rgba(196, 30, 58, 0.6), 0 0 40px rgba(196, 30, 58, 0.4);
+        }
+
+        .dice-popup-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--gold-accent);
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+
+        .dice-popup-result {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--jade-bright);
+            margin: 1rem 0;
+            text-shadow: 0 0 20px rgba(107, 201, 143, 0.5);
+        }
+
+        .dice-popup.critical .dice-popup-result {
+            color: var(--gold-light);
+            text-shadow: 0 0 30px rgba(244, 212, 127, 0.8);
+        }
+
+        .dice-popup.fumble .dice-popup-result {
+            color: var(--red-seal);
+            text-shadow: 0 0 30px rgba(196, 30, 58, 0.8);
+        }
+
+        .dice-popup-details {
+            color: var(--paper);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .dice-popup-label {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .dice-popup.critical .dice-popup-label {
+            color: var(--gold-light);
+        }
+
+        .dice-popup.fumble .dice-popup-label {
+            color: var(--red-seal);
+        }
+
+        @keyframes popupBounce {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes popupFadeOut {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        .dice-popup.fade-out {
+            animation: popupFadeOut 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="character-selector">
+            <h1>FICHA DE BOTICÁRIO</h1>
+            <p style="color: var(--jade-bright); font-style: italic; margin-bottom: 1rem;">Selecione seu Boticário</p>
+            <div class="character-buttons">
+                <button class="character-btn active" data-character="0">Xiao, "Língua Dormente"</button>
+                <button class="character-btn" data-character="1">Doutor Fen</button>
+                <button class="character-btn" data-character="2">Lótus Silenciosa</button>
+                <button class="character-btn" data-character="3">Mestre Jin</button>
+                <button class="character-btn" data-character="4">"Nariz"</button>
+            </div>
+        </div>
+
+        <div class="character-sheet" id="characterSheet">
+            <!-- Conteúdo será gerado dinamicamente -->
+        </div>
+
+        <div class="dice-log">
+            <h3>Registro de Rolagens</h3>
+            <div id="diceLogEntries"></div>
+            <button class="clear-log-btn" onclick="clearDiceLog()">Limpar Registro</button>
+        </div>
+    </div>
+
+    <script>
+        const characterData = [
+            {
+                name: 'Xiao, "Língua Dormente"',
+                concept: 'O Provador de Venenos',
+                origin: 'O Boticário do Submundo',
+                level: 1,
+                attributes: {
+                    CON: { value: 16, mod: 3, notes: 'Vitalidade ferro.' },
+                    INT: { value: 14, mod: 2, notes: 'Conhecimento de ruas.' },
+                    SAB: { value: 12, mod: 1, notes: 'Instinto.' },
+                    CAR: { value: 8, mod: -1, notes: 'Brusco e direto.' }
+                },
+                tc: 21,
+                abilities: [
+                    { name: 'Estômago de Cobre', description: 'TC aumentada em +3; pode comer ingredientes crus VT 0-2 sem testes.' },
+                    { name: 'Bônus de Origem', description: '+2 em Crime' }
+                ],
+                equipment: [
+                    { name: 'Kit Boticário Padrão', description: 'Almofariz, Agulha de Prata, Faca, Bolsa, Tecidos' },
+                    { name: 'Recurso Inicial', description: 'Contato com "Velho Toupeira" (contrabandista)' },
+                    { name: 'Item Especial', description: '1 dose de Balsamina (Emético) escondida na bota' }
+                ],
+                money: 80,
+                defect: 'Curiosidade Mórbida. Precisa fazer teste de SAB para não lamber/provar um veneno desconhecido.'
+            },
+            {
+                name: 'Doutor Fen',
+                concept: 'O Diagnosista',
+                origin: 'O Herdeiro da Medicina',
+                level: 1,
+                attributes: {
+                    CON: { value: 12, mod: 1, notes: 'Saúde mediana.' },
+                    INT: { value: 14, mod: 2, notes: 'Teoria médica.' },
+                    SAB: { value: 16, mod: 3, notes: 'Percepção clínica.' },
+                    CAR: { value: 10, mod: 0, notes: 'Profissional.' }
+                },
+                tc: 16,
+                abilities: [
+                    { name: 'Olhar Clínico', description: 'Ação bônus para descobrir a condição de saúde exata de um alvo.' },
+                    { name: 'Bônus de Origem', description: '+2 em Medicina' }
+                ],
+                equipment: [
+                    { name: 'Kit Boticário Padrão', description: 'Almofariz, Agulha de Prata, Faca, Bolsa, Tecidos' },
+                    { name: 'Kit de Proteção', description: 'Máscara e Luvas' },
+                    { name: 'Item Especial', description: 'Balança de Precisão (herdada do avô)' }
+                ],
+                money: 120,
+                defect: 'Ceticismo. Recusa-se a acreditar em "maldições" ou fantasmas, o que ofende eunucos supersticiosos.'
+            },
+            {
+                name: 'Lótus Silenciosa',
+                concept: 'A Espiã',
+                origin: 'A Serva Invisível',
+                level: 1,
+                attributes: {
+                    CON: { value: 12, mod: 1, notes: 'Resistência do trabalho.' },
+                    INT: { value: 10, mod: 0, notes: 'Prática, não teórica.' },
+                    SAB: { value: 14, mod: 2, notes: 'Atenção aos detalhes.' },
+                    CAR: { value: 16, mod: 3, notes: 'Manipuladora e "invisível".' }
+                },
+                tc: 15,
+                abilities: [
+                    { name: 'Etiqueta de Ferro', description: 'Vantagem social contra eunucos e guardas; sabe sempre como se portar.' },
+                    { name: 'Bônus de Origem', description: '+2 em Furtividade' }
+                ],
+                equipment: [
+                    { name: 'Kit Boticário Padrão', description: 'Almofariz, Agulha de Prata, Faca, Bolsa, Tecidos' },
+                    { name: 'Recurso Inicial', description: 'Chave Mestra da Ala das Lavadeiras' },
+                    { name: 'Item Especial', description: '3 doses de Azedinha fresca escondidas no avental' }
+                ],
+                money: 60,
+                defect: 'Protegido Secreto. Ela envia remédios roubados para uma irmã doente fora do palácio (risco de ser pega).'
+            },
+            {
+                name: 'Mestre Jin',
+                concept: 'O Alquimista Teórico',
+                origin: 'O Erudito Imperial',
+                level: 1,
+                attributes: {
+                    CON: { value: 10, mod: 0, notes: 'Frágil fisicamente.' },
+                    INT: { value: 16, mod: 3, notes: 'Enciclopédia viva.' },
+                    SAB: { value: 12, mod: 1, notes: 'Metódico.' },
+                    CAR: { value: 13, mod: 1, notes: 'Eloquente quando calmo.' }
+                },
+                tc: 12,
+                abilities: [
+                    { name: 'Mãos de Seda', description: 'Nunca falha em preparar pastas delicadas; +2 em cosméticos.' },
+                    { name: 'Bônus de Origem', description: '+2 em História' }
+                ],
+                equipment: [
+                    { name: 'Kit Boticário Padrão', description: 'Almofariz, Agulha de Prata, Faca, Bolsa, Tecidos' },
+                    { name: 'Recurso Inicial', description: 'Acesso livre à Seção Pública da Biblioteca Imperial' },
+                    { name: 'Item Especial', description: 'Livro de Receitas (Contém fórmulas para: Calmante, Tinta Invisível e Chá de Energia)' }
+                ],
+                money: 90,
+                defect: 'Alergia a Peixes. O cheiro causa espirros incontroláveis e desvantagem em testes.'
+            },
+            {
+                name: '"Nariz"',
+                concept: 'O Farejador',
+                origin: 'O Boticário do Submundo (Variante Investigativa)',
+                level: 1,
+                attributes: {
+                    CON: { value: 14, mod: 2, notes: 'Robusto.' },
+                    INT: { value: 12, mod: 1, notes: 'Raciocínio dedutivo.' },
+                    SAB: { value: 16, mod: 3, notes: 'Sentidos aguçados.' },
+                    CAR: { value: 8, mod: -1, notes: 'Antissocial.' }
+                },
+                tc: 18,
+                abilities: [
+                    { name: 'Nariz de Sabujo', description: 'Identifica cheiros fortes/venenos automaticamente a 1.5m.' },
+                    { name: 'Bônus de Origem', description: '+2 em Investigação' }
+                ],
+                equipment: [
+                    { name: 'Kit Boticário Padrão', description: 'Almofariz, Agulha de Prata, Faca, Bolsa, Tecidos' },
+                    { name: 'Recurso Inicial', description: 'Contato com um guarda corrupto dos portões' },
+                    { name: 'Item Especial', description: '1 dose de Balsamina oculta' }
+                ],
+                money: 50,
+                defect: 'Dívida de Honra. Deve dinheiro a uma casa de apostas do distrito dos prazeres; eles cobram favores perigosos.'
+            }
+        ];
+
+        let currentCharacter = 0;
+        let isEditMode = false;
+        let diceLog = [];
+
+        // Carregar dados salvos do localStorage
+        function loadSavedData() {
+            const savedData = localStorage.getItem('jadeCompendium');
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                characterData.forEach((char, index) => {
+                    if (parsed[index]) {
+                        Object.assign(characterData[index], parsed[index]);
+                    }
+                });
+            }
+
+            const savedLog = localStorage.getItem('jadeCompendiumDiceLog');
+            if (savedLog) {
+                diceLog = JSON.parse(savedLog);
+                renderDiceLog();
+            }
+        }
+
+        // Salvar dados no localStorage
+        function saveData() {
+            localStorage.setItem('jadeCompendium', JSON.stringify(characterData));
+            localStorage.setItem('jadeCompendiumDiceLog', JSON.stringify(diceLog));
+        }
+
+        // Rolar dados
+        function rollDice(type, modifier, description) {
+            const d20 = Math.floor(Math.random() * 20) + 1;
+            const total = d20 + modifier;
+            
+            const entry = {
+                timestamp: new Date().toLocaleTimeString('pt-BR'),
+                d20: d20,
+                modifier: modifier,
+                total: total,
+                description: description,
+                critical: d20 === 20,
+                fumble: d20 === 1
+            };
+
+            diceLog.unshift(entry);
+            if (diceLog.length > 50) diceLog.pop();
+            
+            saveData();
+            renderDiceLog();
+            
+            // Mostrar popup visual
+            showDicePopup(entry);
+        }
+
+        // Mostrar popup de resultado
+        function showDicePopup(entry) {
+            // Remover popup anterior se existir
+            const existingPopup = document.querySelector('.dice-popup');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+
+            const popup = document.createElement('div');
+            popup.className = 'dice-popup';
+            
+            if (entry.critical) {
+                popup.classList.add('critical');
+            } else if (entry.fumble) {
+                popup.classList.add('fumble');
+            }
+
+            let resultLabel = 'Resultado';
+            if (entry.critical) {
+                resultLabel = '✦ CRÍTICO! ✦';
+            } else if (entry.fumble) {
+                resultLabel = '✦ FALHA CRÍTICA! ✦';
+            }
+
+            popup.innerHTML = `
+                <div class="dice-popup-title">${entry.description}</div>
+                <div class="dice-popup-label">${resultLabel}</div>
+                <div class="dice-popup-result">${entry.total}</div>
+                <div class="dice-popup-details">
+                    d20: ${entry.d20} ${entry.modifier >= 0 ? '+' : ''}${entry.modifier}
+                </div>
+            `;
+
+            document.body.appendChild(popup);
+
+            // Remover popup após 2 segundos
+            setTimeout(() => {
+                popup.classList.add('fade-out');
+                setTimeout(() => {
+                    popup.remove();
+                }, 300);
+            }, 2000);
+        }
+
+        // Renderizar log de dados
+        function renderDiceLog() {
+            const logContainer = document.getElementById('diceLogEntries');
+            if (diceLog.length === 0) {
+                logContainer.innerHTML = '<p style="color: var(--jade-bright); opacity: 0.6; text-align: center;">Nenhuma rolagem ainda. Clique em um atributo para testar!</p>';
+                return;
+            }
+
+            logContainer.innerHTML = diceLog.map(entry => {
+                let className = 'dice-entry';
+                let resultText = 'Sucesso';
+                if (entry.critical) {
+                    className += ' critical';
+                    resultText = '✦ CRÍTICO! ✦';
+                } else if (entry.fumble) {
+                    className += ' fumble';
+                    resultText = '✦ FALHA CRÍTICA! ✦';
+                }
+
+                return `
+                    <div class="${className}">
+                        <div><strong>${entry.description}</strong> - ${resultText}</div>
+                        <div class="dice-result">Total: ${entry.total}</div>
+                        <div class="dice-details">d20: ${entry.d20} + Modificador: ${entry.modifier >= 0 ? '+' : ''}${entry.modifier} | ${entry.timestamp}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Limpar log
+        function clearDiceLog() {
+            if (confirm('Deseja realmente limpar todo o registro de rolagens?')) {
+                diceLog = [];
+                saveData();
+                renderDiceLog();
+            }
+        }
+
+        // Renderizar ficha
+        function renderCharacter() {
+            const char = characterData[currentCharacter];
+            const sheet = document.getElementById('characterSheet');
+
+            if (isEditMode) {
+                renderEditMode(char, sheet);
+            } else {
+                renderViewMode(char, sheet);
+            }
+        }
+
+        function renderViewMode(char, sheet) {
+            sheet.innerHTML = `
+                <div class="sheet-header">
+                    <div>
+                        <h2 class="character-name">${char.name}</h2>
+                        <p style="color: var(--jade-bright); font-style: italic;">${char.concept}</p>
+                    </div>
+                    <button class="edit-btn" onclick="toggleEditMode()">✎ Editar</button>
+                </div>
+
+                <div class="character-info">
+                    <div class="info-section">
+                        <h3>Informações Básicas</h3>
+                        <div class="info-row">
+                            <span class="info-label">Origem:</span>
+                            <span class="info-value">${char.origin}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Nível:</span>
+                            <span class="info-value">${char.level}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Tolerância Corporal (TC):</span>
+                            <span class="info-value">${char.tc}</span>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Recursos</h3>
+                        <div class="info-row">
+                            <span class="info-label">Dinheiro:</span>
+                            <span class="info-value">${char.money} Peças de Cobre</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Atributos (Clique para rolar d20 + Modificador)</h3>
+                <div class="attributes-grid">
+                    ${Object.entries(char.attributes).map(([key, attr]) => `
+                        <div class="attribute-card tooltip" onclick="rollDice('attribute', ${attr.mod}, '${key}')">
+                            <div class="attribute-name">${key}</div>
+                            <div class="attribute-value">${attr.value}</div>
+                            <div class="attribute-modifier">${attr.mod >= 0 ? '+' : ''}${attr.mod}</div>
+                            <div style="color: var(--jade-bright); font-size: 0.85rem; margin-top: 0.5rem;">${attr.notes}</div>
+                            <span class="tooltiptext">Clique para rolar d20${attr.mod >= 0 ? '+' : ''}${attr.mod}</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <h3 class="section-title">Habilidades & Talentos</h3>
+                <div class="abilities-section">
+                    ${char.abilities.map(ability => `
+                        <div class="ability-item">
+                            <div class="ability-name">${ability.name}</div>
+                            <div class="ability-description">${ability.description}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <h3 class="section-title">Equipamento & Inventário</h3>
+                <div class="equipment-section">
+                    ${char.equipment.map(item => `
+                        <div class="equipment-item">
+                            <div class="equipment-name">${item.name}</div>
+                            <div class="equipment-description">${item.description}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="defect-box">
+                    <h3>Defeito Trágico</h3>
+                    <div class="defect-text">${char.defect}</div>
+                </div>
+            `;
+        }
+
+        function renderEditMode(char, sheet) {
+            sheet.innerHTML = `
+                <div class="sheet-header">
+                    <h2 class="character-name">Modo de Edição</h2>
+                    <div>
+                        <button class="save-btn" onclick="saveEdit()">✓ Salvar</button>
+                        <button class="cancel-btn" onclick="toggleEditMode()">✕ Cancelar</button>
+                    </div>
+                </div>
+
+                <div class="character-info">
+                    <div class="info-section">
+                        <h3>Informações Básicas</h3>
+                        <div class="info-row">
+                            <span class="info-label">Nome:</span>
+                            <input type="text" id="edit-name" value="${char.name}">
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Conceito:</span>
+                            <input type="text" id="edit-concept" value="${char.concept}">
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Origem:</span>
+                            <input type="text" id="edit-origin" value="${char.origin}">
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Nível:</span>
+                            <input type="number" id="edit-level" value="${char.level}">
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">TC:</span>
+                            <input type="number" id="edit-tc" value="${char.tc}">
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Recursos</h3>
+                        <div class="info-row">
+                            <span class="info-label">Dinheiro:</span>
+                            <input type="number" id="edit-money" value="${char.money}">
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Atributos</h3>
+                <div class="attributes-grid">
+                    ${Object.entries(char.attributes).map(([key, attr]) => `
+                        <div class="attribute-card">
+                            <div class="attribute-name">${key}</div>
+                            
+                            <input type="number" id="edit-attr-${key}" value="${attr.value}" 
+                                style="margin: 0.5rem 0; text-align: center; font-size: 1.2rem; position: relative; z-index: 10;" 
+                                min="1" max="30">
+                            
+                            <div style="color: var(--gold-accent); font-size: 1.1rem; margin: 0.3rem 0; display: flex; justify-content: center; align-items: center; gap: 5px; position: relative; z-index: 10;">
+                                Mod: 
+                                <input type="number" id="edit-mod-${key}" value="${attr.mod}" 
+                                    style="width: 60px; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid var(--gold-accent); color: var(--gold-accent); border-radius: 4px; position: relative; z-index: 10;">
+                            </div>
+                            
+                            <div style="color: var(--jade-bright); font-size: 0.85rem; margin-top: 0.5rem; position: relative; z-index: 10;">
+                                <input type="text" id="edit-notes-${key}" value="${attr.notes}" placeholder="Notas">
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <h3 class="section-title">
+                    Habilidades & Talentos
+                    <button onclick="addAbility()" style="float: right; padding: 0.4rem 0.8rem; background: var(--jade-light); border: 1px solid var(--gold-accent); color: var(--paper); border-radius: 4px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.9rem;">+ Adicionar</button>
+                </h3>
+                <div class="abilities-section" id="abilities-edit-container">
+                    ${char.abilities.map((ability, index) => `
+                        <div class="ability-edit-item" style="background: rgba(26, 48, 32, 0.5); padding: 1rem; margin-bottom: 0.8rem; border-left: 4px solid var(--jade-light); border-radius: 4px; position: relative;">
+                            <button onclick="removeAbility(this)" style="position: absolute; top: 0.5rem; right: 0.5rem; background: var(--red-seal); border: none; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; z-index: 10;">✕</button>
+                            <input type="text" class="ability-name-input" value="${ability.name}" placeholder="Nome da Habilidade" style="margin-bottom: 0.5rem; font-weight: 600;">
+                            <textarea class="ability-desc-input" placeholder="Descrição da Habilidade">${ability.description}</textarea>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <h3 class="section-title">
+                    Equipamento & Inventário
+                    <button onclick="addEquipment()" style="float: right; padding: 0.4rem 0.8rem; background: var(--jade-light); border: 1px solid var(--gold-accent); color: var(--paper); border-radius: 4px; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.9rem;">+ Adicionar</button>
+                </h3>
+                <div class="equipment-section" id="equipment-edit-container">
+                    ${char.equipment.map((item, index) => `
+                        <div class="equipment-edit-item" style="background: rgba(26, 48, 32, 0.5); padding: 1rem; margin-bottom: 0.8rem; border-left: 4px solid var(--jade-light); border-radius: 4px; position: relative;">
+                            <button onclick="removeEquipment(this)" style="position: absolute; top: 0.5rem; right: 0.5rem; background: var(--red-seal); border: none; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; z-index: 10;">✕</button>
+                            <input type="text" class="equipment-name-input" value="${item.name}" placeholder="Nome do Item" style="margin-bottom: 0.5rem; font-weight: 600;">
+                            <textarea class="equipment-desc-input" placeholder="Descrição do Item">${item.description}</textarea>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="defect-box">
+                    <h3>Defeito Trágico</h3>
+                    <textarea id="edit-defect" style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--red-seal);">${char.defect}</textarea>
+                </div>
+            `;
+
+            // Listeners mantidos
+            Object.keys(char.attributes).forEach(key => {
+                const attrInput = document.getElementById(`edit-attr-${key}`);
+                const modInput = document.getElementById(`edit-mod-${key}`);
+                
+                attrInput.addEventListener('input', function() {
+                    const value = parseInt(this.value) || 10;
+                    const calculatedMod = Math.floor((value - 10) / 2);
+                    modInput.value = calculatedMod; 
+                });
+            });
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            renderCharacter();
+        }
+
+        function addAbility() {
+            const container = document.getElementById('abilities-edit-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'ability-edit-item';
+            newItem.style.cssText = 'background: rgba(26, 48, 32, 0.5); padding: 1rem; margin-bottom: 0.8rem; border-left: 4px solid var(--jade-light); border-radius: 4px; position: relative; animation: slideInRight 0.3s ease-out;';
+            newItem.innerHTML = `
+                <button onclick="removeAbility(this)" style="position: absolute; top: 0.5rem; right: 0.5rem; background: var(--red-seal); border: none; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">✕</button>
+                <input type="text" class="ability-name-input" value="" placeholder="Nome da Habilidade" style="margin-bottom: 0.5rem; font-weight: 600;">
+                <textarea class="ability-desc-input" placeholder="Descrição da Habilidade"></textarea>
+            `;
+            container.appendChild(newItem);
+        }
+
+        function removeAbility(button) {
+            if (confirm('Deseja remover esta habilidade?')) {
+                button.parentElement.remove();
+            }
+        }
+
+        function addEquipment() {
+            const container = document.getElementById('equipment-edit-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'equipment-edit-item';
+            newItem.style.cssText = 'background: rgba(26, 48, 32, 0.5); padding: 1rem; margin-bottom: 0.8rem; border-left: 4px solid var(--jade-light); border-radius: 4px; position: relative; animation: slideInRight 0.3s ease-out;';
+            newItem.innerHTML = `
+                <button onclick="removeEquipment(this)" style="position: absolute; top: 0.5rem; right: 0.5rem; background: var(--red-seal); border: none; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">✕</button>
+                <input type="text" class="equipment-name-input" value="" placeholder="Nome do Item" style="margin-bottom: 0.5rem; font-weight: 600;">
+                <textarea class="equipment-desc-input" placeholder="Descrição do Item"></textarea>
+            `;
+            container.appendChild(newItem);
+        }
+
+        function removeEquipment(button) {
+            if (confirm('Deseja remover este item?')) {
+                button.parentElement.remove();
+            }
+        }
+
+        function saveEdit() {
+            const char = characterData[currentCharacter];
+
+            char.name = document.getElementById('edit-name').value;
+            char.concept = document.getElementById('edit-concept').value;
+            char.origin = document.getElementById('edit-origin').value;
+            char.level = parseInt(document.getElementById('edit-level').value);
+            char.tc = parseInt(document.getElementById('edit-tc').value);
+            char.money = parseInt(document.getElementById('edit-money').value);
+            char.defect = document.getElementById('edit-defect').value;
+
+            // Atualizar atributos e modificadores MANUALMENTE
+            Object.keys(char.attributes).forEach(key => {
+                const value = parseInt(document.getElementById(`edit-attr-${key}`).value);
+                // MUDANÇA AQUI: Pega o valor digitado no input de modificador
+                const mod = parseInt(document.getElementById(`edit-mod-${key}`).value);
+                
+                char.attributes[key].value = value;
+                char.attributes[key].mod = mod;
+                char.attributes[key].notes = document.getElementById(`edit-notes-${key}`).value;
+            });
+
+            // Atualizar habilidades
+            char.abilities = [];
+            document.querySelectorAll('.ability-edit-item').forEach(item => {
+                const name = item.querySelector('.ability-name-input').value;
+                const description = item.querySelector('.ability-desc-input').value;
+                if (name.trim() || description.trim()) {
+                    char.abilities.push({ name, description });
+                }
+            });
+
+            // Atualizar equipamento
+            char.equipment = [];
+            document.querySelectorAll('.equipment-edit-item').forEach(item => {
+                const name = item.querySelector('.equipment-name-input').value;
+                const description = item.querySelector('.equipment-desc-input').value;
+                if (name.trim() || description.trim()) {
+                    char.equipment.push({ name, description });
+                }
+            });
+
+            saveData();
+            updateCharacterButtons();
+            isEditMode = false;
+            renderCharacter();
+        }
+
+        // Atualizar nomes dos botões
+        function updateCharacterButtons() {
+            document.querySelectorAll('.character-btn').forEach((btn, index) => {
+                btn.textContent = characterData[index].name;
+            });
+        }
+
+        // Seletor de personagem
+        document.querySelectorAll('.character-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.character-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentCharacter = parseInt(this.dataset.character);
+                isEditMode = false;
+                renderCharacter();
+            });
+        });
+
+        // Inicialização
+        loadSavedData();
+        updateCharacterButtons();
+        renderCharacter();
+        renderDiceLog();
+    </script>
+</body>
+</html>
